@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'docker-agent' }
 
     tools {
         maven 'maven3.8.7'
@@ -9,8 +9,8 @@ pipeline {
     environment {
         APP_NAME         = 'country-chicken-backend'
 
-        NEXUS_MAVEN_URL  = '3.89.152.50:8081'
-        NEXUS_DOCKER_URL = '3.89.152.50:8082'
+        NEXUS_MAVEN_URL  = '3.90.88.225:8081'
+        NEXUS_DOCKER_URL = '3.90.88.225:8082'
 
         MAVEN_REPO       = 'maven-releases'
         DOCKER_REPO      = 'docker-releases'
@@ -79,8 +79,7 @@ pipeline {
             steps {
                 sh """
                 docker build \
-                  -t ${NEXUS_DOCKER_URL}/${DOCKER_REPO}/${APP_NAME}:${VERSION} \
-                  -t ${NEXUS_DOCKER_URL}/${DOCKER_REPO}/${APP_NAME}:latest .
+                  -t "$NEXUS_DOCKER_URL/$APP_NAME:$VERSION" .
                 """
             }
         }
@@ -94,12 +93,12 @@ pipeline {
                 )]) {
                     sh """
 
-                    echo "$DOCKER_PASS" | docker login ${NEXUS_DOCKER_URL} -u "$DOCKER_USER" --password-stdin
+                    set +x
+                    echo "$DOCKER_PASS" | docker login "$NEXUS_DOCKER_URL" \
+                      -u "$DOCKER_USER" --password-stdin
 
-                    docker push ${NEXUS_DOCKER_URL}/${DOCKER_REPO}/${APP_NAME}:${VERSION}
-                    docker push ${NEXUS_DOCKER_URL}/${DOCKER_REPO}/${APP_NAME}:latest
-
-                    docker logout ${NEXUS_DOCKER_URL}
+                    docker push "$NEXUS_DOCKER_URL/$APP_NAME:$VERSION"
+                    docker logout "$NEXUS_DOCKER_URL"
                     """
 
                 }
@@ -115,7 +114,6 @@ pipeline {
             echo "❌ Build Failed"
         }
         always {
-            sh 'docker system prune -f'
             cleanWs()
         }
     }
