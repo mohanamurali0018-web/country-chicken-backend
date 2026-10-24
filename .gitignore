@@ -105,4 +105,5 @@ apidocs/
 
 # Test reports
 test-output/
-test-results/
+test-results/CI
+CI.pub
