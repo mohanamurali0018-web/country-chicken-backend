@@ -9,8 +9,8 @@ pipeline {
     environment {
         APP_NAME         = 'country-chicken-backend'
 
-        NEXUS_MAVEN_URL  = '3.90.88.225:8081'
-        NEXUS_DOCKER_URL = '3.90.88.225:8082'
+        NEXUS_MAVEN_URL  = '50.19.17.226:8081'
+        NEXUS_DOCKER_URL = '50.19.17.226:8082'
 
         MAVEN_REPO       = 'maven-releases'
         DOCKER_REPO      = 'docker-releases'
